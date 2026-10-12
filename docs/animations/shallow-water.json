@@ -1,0 +1,33 @@
+{
+  "grid": 64,
+  "dt": 0.002,
+  "integrationSteps": 12500,
+  "fields": [
+    "Exp. 1: vorticity",
+    "Exp. 1: total height",
+    "Exp. 2: vorticity",
+    "Exp. 2: total height"
+  ],
+  "frames": 601,
+  "fps": 30,
+  "firstTime": 0.0,
+  "lastTime": 25.0,
+  "variants": [
+    {
+      "field": "Exp. 1: vorticity",
+      "video": "shallow-water-0.mp4"
+    },
+    {
+      "field": "Exp. 1: total height",
+      "video": "shallow-water-1.mp4"
+    },
+    {
+      "field": "Exp. 2: vorticity",
+      "video": "shallow-water-2.mp4"
+    },
+    {
+      "field": "Exp. 2: total height",
+      "video": "shallow-water-3.mp4"
+    }
+  ]
+}

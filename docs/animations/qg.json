@@ -1,0 +1,28 @@
+{
+  "grid": 64,
+  "dt": 0.005,
+  "integrationSteps": 2400,
+  "fields": [
+    "Upper-layer streamfunction",
+    "Streamfunction difference",
+    "Upper-layer PV perturbation"
+  ],
+  "frames": 601,
+  "fps": 30,
+  "firstTime": 0.0,
+  "lastTime": 12.0,
+  "variants": [
+    {
+      "field": "Upper-layer streamfunction",
+      "video": "qg-0.mp4"
+    },
+    {
+      "field": "Streamfunction difference",
+      "video": "qg-1.mp4"
+    },
+    {
+      "field": "Upper-layer PV perturbation",
+      "video": "qg-2.mp4"
+    }
+  ]
+}

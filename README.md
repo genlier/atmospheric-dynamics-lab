@@ -9,14 +9,14 @@ Explore atmospheric flow using Fourier spectral models. English is the default w
 Paint positive or negative vorticity, erase part of the field, enter a mathematical function, or import a JSON grid. Choose the Reynolds number, beta, integration duration, maximum time step and output density, then compute an animation in your browser.
 
 - Periodic domain: $[-\pi,\pi)\times[-\pi,\pi)$.
-- Grid: 32×32 or 64×64; 61, 121 or 241 computed frames.
+- Grid: 32×32 or 64×64; 61, 121, 601 or 1201 computed frames.
 - Pause, scrub the timeline, change playback speed, inspect grid values, and view kinetic energy and enstrophy.
 - Export the initial field or computed results as JSON. Imported grids use the same initial-field format.
 - Computation and imported data stay in the browser.
 
 The live solver integrates the **barotropic vorticity equation**. The nine reference experiments also include shallow-water adjustment, two-layer quasi-geostrophy and a rising thermal bubble; these supplementary models are presented as saved results.
 
-Reference playback interpolates the existing snapshots. The live laboratory numerically integrates a new trajectory and interpolates adjacent computed frames for playback. Use **“Use this initial field in the live lab”** on the five BVE reference cases to compute a denser trajectory. The live calculation uses its displayed grid and settings; the 256×256 turbulence reference is sampled to 64×64 for display.
+Each reference animation contains 601 actual numerical frames from a complete integration, saved as PNG images and encoded in order at 30 fps. Playback uses those frames directly. The turbulence animation uses its original 256×256 grid. The live laboratory stores a new numerical trajectory and plays its computed frames directly; the selected frame count controls the recording density. Small 64×64 previews supply editable starting fields. PNG sequences are available with the recorded-animation release.
 
 ## Run locally
 
@@ -85,3 +85,19 @@ The JavaScript tests check FFT inversion, exact viscous decay, beta-wave phase, 
 
 The publication contains selected code and numerical snapshots. Personal reports, lecture files, credentials, private paths and raw datasets are excluded. Commits use the owner's GitHub privacy email.
 
+
+
+
+## Reproduce the recorded animations
+
+Install requirements-animation.txt and make MATLAB and FFmpeg available on the command line, then run:
+
+~~~bash
+matlab -batch "addpath('tools'); run_dense_bve"
+python tools/run_dense_supplements.py
+python tools/render_dense_animations.py case1 case2 case3 case4 case5 asymmetric shallow-water qg thermal
+python tools/update_reference_data.py
+python tools/verify_animations.py
+~~~
+
+The MATLAB wrapper records the existing solver without editing bve.m. PNG frames are saved in outputs/dense/frames; MP4 files and timing metadata are saved in docs/animations. Integration retains each model's existing grid, time step and end time.

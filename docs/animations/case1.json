@@ -1,0 +1,21 @@
+{
+  "grid": 64,
+  "dt": 0.000375,
+  "integrationSteps": 16000,
+  "Re": 1.0,
+  "beta": 0.0,
+  "name": "Decaying vortex grid",
+  "fields": [
+    "Relative vorticity"
+  ],
+  "frames": 601,
+  "fps": 30,
+  "firstTime": 0.0,
+  "lastTime": 6.0,
+  "variants": [
+    {
+      "field": "Relative vorticity",
+      "video": "case1-0.mp4"
+    }
+  ]
+}

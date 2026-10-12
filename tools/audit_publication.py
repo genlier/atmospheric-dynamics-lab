@@ -14,9 +14,14 @@ def audit():
     for path in ROOT.rglob('*'):
         if not path.is_file() or '.git' in path.parts or '__pycache__' in path.parts:
             continue
+        if path.relative_to(ROOT).parts[0]=='outputs':continue
         count+=1
         if path.suffix.lower() in BLOCKED or path.name in {'.env','.cdsapirc'} or path.name.startswith('.env.'):
             problems.append(str(path.relative_to(ROOT))); continue
+        if path.suffix.lower()=='.mp4' and path.parent==ROOT/'docs'/'animations':
+            with path.open('rb') as video: header=video.read(12)
+            if header[4:8]!=b'ftyp': problems.append(str(path.relative_to(ROOT)))
+            continue
         try: content=path.read_text(encoding='utf-8')
         except UnicodeDecodeError:
             problems.append(str(path.relative_to(ROOT))); continue

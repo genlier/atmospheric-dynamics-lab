@@ -8,11 +8,11 @@
 
 支持正、负涡度画笔、橡皮擦、数学表达式和 JSON 网格导入。可设置雷诺数、beta、积分时长、最大时间步长和保存帧数，随后在浏览器里计算并播放动画。
 
-周期区域为 $[-\pi,\pi)\times[-\pi,\pi)$，提供 32×32 和 64×64 网格，保存 61、121 或 241 个计算帧。播放支持暂停、时间轴拖动、速度调整、色标切换和格点取值，并显示动能与涡度拟能。初值和计算结果可导出为 JSON，数据保留在当前浏览器。
+周期区域为 $[-\pi,\pi)\times[-\pi,\pi)$，提供 32×32 和 64×64 网格，保存 61、121、601 或 1201 个计算帧。播放支持暂停、时间轴拖动、速度调整、色标切换和格点取值，并显示动能与涡度拟能。初值和计算结果可导出为 JSON，数据保留在当前浏览器。
 
 自由实验计算正压涡度方程。九个参考算例还包括浅水地转适应、两层准地转和热泡上升，这些补充模式提供已有计算结果。
 
-参考算例的平滑播放对已有快照进行插值。自由实验由数值积分生成较密集的计算帧，再对相邻帧插值播放。五个正压算例可通过“将此初值载入自由实验”重新计算。自由实验采用页面显示的网格和参数；二维湍流参考结果由 256×256 抽样至 64×64 显示。
+每个参考动画均从初值完整积分到终止时刻，保存 601 张实际计算 PNG 帧，再按 30 fps 顺序编码。二维湍流动画使用原来的 256×256 网格。自由实验同样直接播放计算保存帧，帧数设置决定记录密度。用于初值编辑的小型预览保留 64×64 网格。
 
 ## 运行
 
@@ -67,3 +67,18 @@ python tools/audit_publication.py
 
 仓库只收录精选源码及数值快照。个人报告、讲义文件、凭据、私人路径和原始大数据均未纳入，提交使用账号的 GitHub 隐私邮箱。
 
+
+
+## 复现录制动画
+
+安装 requirements-animation.txt，并将 MATLAB、FFmpeg 加入命令行路径后运行：
+
+~~~bash
+matlab -batch "addpath('tools'); run_dense_bve"
+python tools/run_dense_supplements.py
+python tools/render_dense_animations.py case1 case2 case3 case4 case5 asymmetric shallow-water qg thermal
+python tools/update_reference_data.py
+python tools/verify_animations.py
+~~~
+
+记录脚本调用现有算法并保存密集时次，bve.m 原文件保持不变。PNG 序列保存在 outputs/dense/frames，视频及时间元数据保存在 docs/animations。网格、时间步长与终止时刻沿用原模型设置。

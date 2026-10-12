@@ -1,0 +1,21 @@
+{
+  "grid": 64,
+  "dt": 8.33e-05,
+  "integrationSteps": 72029,
+  "Re": 100.0,
+  "beta": 0.0,
+  "name": "Shear instability",
+  "fields": [
+    "Relative vorticity"
+  ],
+  "frames": 601,
+  "fps": 30,
+  "firstTime": 0.0,
+  "lastTime": 6.0000157000000005,
+  "variants": [
+    {
+      "field": "Relative vorticity",
+      "video": "case3-0.mp4"
+    }
+  ]
+}

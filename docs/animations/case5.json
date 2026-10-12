@@ -1,0 +1,21 @@
+{
+  "grid": 256,
+  "dt": 0.05,
+  "integrationSteps": 6000,
+  "Re": 40000.0,
+  "beta": 0.0,
+  "name": "Two-dimensional turbulence",
+  "fields": [
+    "Relative vorticity"
+  ],
+  "frames": 601,
+  "fps": 30,
+  "firstTime": 0.0,
+  "lastTime": 300.0,
+  "variants": [
+    {
+      "field": "Relative vorticity",
+      "video": "case5-0.mp4"
+    }
+  ]
+}
