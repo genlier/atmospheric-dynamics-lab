@@ -1,85 +1,87 @@
 # Atmospheric Dynamics Lab
 
-用傅里叶伪谱方法探索涡旋演化、地转适应与浮力驱动流动。包含 MATLAB / NumPy 数值模式，以及可直接在浏览器打开的交互展示。
+**[Open the live laboratory](https://genlier.github.io/atmospheric-dynamics-lab/)** · [中文版](README.zh-CN.md) · [中文网页](https://genlier.github.io/atmospheric-dynamics-lab/?lang=zh)
 
-**[打开交互实验室](https://genlier.github.io/atmospheric-dynamics-lab/)**
+Explore atmospheric flow using Fourier spectral models. English is the default website language; Chinese is available from the language switch.
 
-## 内容
+## Interactive laboratory
 
-| 算例 | 观察内容 |
-| --- | --- |
-| 衰减涡格 | 涡格黏性衰减；总动能与精确解对比 |
-| 涡旋相互作用 | 同号涡旋互旋、合并与轴对称化 |
-| 剪切不稳定 | 涡度带弯曲、卷起与涡核形成 |
-| 涡旋漂移 | 行星涡度梯度、漂移与 Rossby 波 |
-| 二维湍流 | 涡旋并合与动能谱演化 |
-| 非对称双涡旋 | 幅值和半径差异对演化的影响 |
-| 浅水地转适应 | 比较高度扰动、涡度扰动的调整 |
-| 两层准地转 | 垂直切变与层间位涡耦合 |
-| 热泡上升 | 均匀温度背景中的 Boussinesq 浮力过程 |
+Paint positive or negative vorticity, erase part of the field, enter a mathematical function, or import a JSON grid. Choose the Reynolds number, beta, integration duration, maximum time step and output density, then compute an animation in your browser.
 
-## 快速开始
+- Periodic domain: $[-\pi,\pi)\times[-\pi,\pi)$.
+- Grid: 32×32 or 64×64; 61, 121 or 241 computed frames.
+- Pause, scrub the timeline, change playback speed, inspect grid values, and view kinetic energy and enstrophy.
+- Export the initial field or computed results as JSON. Imported grids use the same initial-field format.
+- Computation and imported data stay in the browser.
 
-### 网页
+The live solver integrates the **barotropic vorticity equation**. The nine reference experiments also include shallow-water adjustment, two-layer quasi-geostrophy and a rising thermal bubble; these supplementary models are presented as saved results.
 
-无需构建、登录或外部服务。直接打开 `docs/index.html`，或运行：
+Reference playback interpolates the existing snapshots. The live laboratory numerically integrates a new trajectory and interpolates adjacent computed frames for playback. Use **“Use this initial field in the live lab”** on the five BVE reference cases to compute a denser trajectory. The live calculation uses its displayed grid and settings; the 256×256 turbulence reference is sampled to 64×64 for display.
 
-```bash
+## Run locally
+
+Serve the website from the repository root:
+
+~~~bash
 python -m http.server 8000 --directory docs
-```
+~~~
 
-浏览 `http://localhost:8000`。支持算例切换、保存时次播放、物理量选择、色标切换、格点取值及动能/能谱查看。时间滑块浏览离散的数值快照，网页不重新积分方程。二维湍流的显示网格由 256×256 抽样至 64×64，诊断谱仍来自原网格；两层准地转算例仅提供末时刻。
+Open http://localhost:8000. All scripts are included locally; no build step or external resources are required. Worker computation runs from HTTP or HTTPS pages.
 
 ### MATLAB
 
-```matlab
+~~~matlab
 run('models/matlab/bve.m')
-```
+~~~
 
-在文件开头修改 `p.model_case`（1–5）选择测试。`models/matlab/shallow_water.m` 提供浅水模式，通过 `p.exp_case` 选择初始高度或涡度扰动。
+Set p.model_case to 1–5 for the BVE benchmarks. models/matlab/shallow_water.m uses p.exp_case to select initial height or vorticity perturbations.
 
 ### Python
 
-```bash
+~~~bash
 python -m pip install -r requirements.txt
 python models/python/bve.py --case 1 --output outputs/case1.npz
 python models/python/experiments.py
 python models/python/supplementary.py
-```
+~~~
 
-`bve.py` 保存末时刻数值数组；衰减涡格同时保存数值与解析动能时序。`experiments.py` 包含参数探索和浅水算例；`supplementary.py` 包含两层准地转及热泡。辅助探索脚本的部分配置与 MATLAB 基准不同，查看各脚本开头的参数后运行，勿将不同配置的结果混为一次计算。
+The first script saves numerical arrays and, for the decaying vortex grid, numerical and exact energy histories. The auxiliary scripts explore asymmetric vortices, shallow water, two-layer QG and thermals. Their configurations are defined in the source.
 
-## 方法与参数
+## Mathematical model
 
-周期区域内采用傅里叶展开，空间微分转为谱系数与波数因子的乘积。正压模式以涡度为预报量，通过泊松反演求流函数；非线性乘积在物理空间计算，施加 2/3 截断退混淆。使用 RK4 推进平流，并以指数因子处理黏性扩散。
+The live model uses
 
-| MATLAB 测试 | 网格 | Re | beta | dt | T |
-| --- | --- | --- | --- | --- | --- |
-| 衰减涡格 | 64×64 | 1 | 0 | 0.000375 | 6 |
-| 双涡旋 | 64×64 | 50 | 0 | 0.0000833 | 6 |
-| 剪切层 | 64×64 | 100 | 0 | 0.0000833 | 6 |
-| 漂移 | 64×64 | 50 | 1 | 0.0000833 | 6 |
-| 湍流 | 256×256 | 40000 | 0 | 0.05 | 300 |
+$$
+\frac{\partial\zeta}{\partial t}+J(\psi,\zeta)+\beta\frac{\partial\psi}{\partial x}
+=\frac{1}{\mathrm{Re}}\nabla^2\zeta,\qquad
+\nabla^2\psi=\zeta,
+$$
 
-快照来自已保存的数值计算，未从论文或讲义图片提取。网页里的辅助模式与仓库脚本采用相同控制关系和参数。热泡采用双周期边界和均匀温度背景；它与上下平板加热的 Rayleigh–Bénard 算例具有不同边界和背景条件。
+with $u=-\partial_y\psi$, $v=\partial_x\psi$ and $J(\psi,\zeta)=\partial_x\psi\,\partial_y\zeta-\partial_y\psi\,\partial_x\zeta$.
 
-## 验证
+Fourier differentiation represents spatial derivatives through wavenumber factors. Poisson inversion uses the zero-mean vorticity field, with the streamfunction's zero mode set to zero. Nonlinear products use 2/3 truncation. Advection advances with RK4 and viscous diffusion with an exponential factor. The browser solver bounds its time step using the selected maximum, the velocity CFL estimate and the beta-wave frequency.
 
-```bash
+Initial JSON fields contain n and values, ordered with x increasing fastest, followed by y increasing from −π. Results include the initial field, parameters, mean removed, completion state, time, vorticity, energy and enstrophy for each computed frame.
+
+## Verification
+
+~~~bash
+node tests/test_browser_solver.js
 python -m unittest discover -s tests
 python tools/audit_publication.py
-```
+~~~
 
-解析涡格测试检查动能衰减与精确解的一致性。静态检查检查个人路径、邮箱、常见密钥模式及不应发布的文件类型。
+The JavaScript tests check FFT inversion, exact viscous decay, beta-wave phase, nonlinear energy and enstrophy conservation, zero-mean inversion and expression parsing. Browser checks cover both languages, drawing, computation, downloads, imports, cancellation and mobile layout.
 
-## 目录
+## Repository
 
-```text
-models/matlab/   MATLAB 求解器
-models/python/   NumPy 求解器与辅助算例
-docs/           GitHub Pages 页面和精简快照
-tests/          解析解验证
-tools/          发布内容检查
-```
+| Directory | Contents |
+| --- | --- |
+| models/matlab/ | Original BVE and shallow-water solvers |
+| models/python/ | NumPy solver and supplementary experiments |
+| docs/ | Bilingual site, reference snapshots and browser solver |
+| tests/ | Analytic and conservation checks |
+| tools/ | Publication audit |
 
-发布目录仅包含精选代码、说明和数值快照。个人报告、姓名学号、讲义文件、配置凭据、下载资料、原始大数据及历史缓存均不在仓库中。GitHub 提交使用通用项目署名。网页没有访问统计或第三方资源请求。
+The publication contains selected code and numerical snapshots. Personal reports, lecture files, credentials, private paths and raw datasets are excluded. Commits use the owner's GitHub privacy email.
+

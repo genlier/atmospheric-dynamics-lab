@@ -1,0 +1,30 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {FFT,BVE}=require('../docs/solver.js');
+const {compile}=require('../docs/expression.js');
+const n=32,size=n*n,original=Float64Array.from({length:size},(_,i)=>Math.sin(i*0.3)+Math.cos(i*0.7));
+const r=original.slice(),v=new Float64Array(size),fft=new FFT(n);fft.transform(r,v);fft.transform(r,v,true);
+assert.ok(Math.max(...r.map((x,i)=>Math.abs(x-original[i])))<1e-12,'FFT round trip');
+assert.ok(Math.max(...v.map(Math.abs))<1e-12,'Imaginary roundoff');
+function wave(beta){
+  const initial=Float64Array.from({length:size},(_,i)=>-2*Math.cos(-Math.PI+2*Math.PI*(i%n)/n)*Math.cos(-Math.PI+2*Math.PI*Math.floor(i/n)/n));
+  const model=new BVE(initial,n,2,beta);
+  while(1-model.time>1e-12)model.step(0.005,1-model.time);
+  const out=model.snapshot(),exact=Float64Array.from(initial,(_,i)=>-2*Math.cos(-Math.PI+2*Math.PI*(i%n)/n+beta/2)*Math.cos(-Math.PI+2*Math.PI*Math.floor(i/n)/n)*Math.exp(-1));
+  assert.ok(Math.max(...out.values.map((x,i)=>Math.abs(x-exact[i])))<1e-9,'Viscous/Rossby exact solution');
+  assert.ok(Math.abs(out.energy-0.25*Math.exp(-2))<1e-10,'Exact energy decay');
+}
+wave(0);wave(1);
+const interacting=Float64Array.from({length:size},(_,i)=>{const x=-Math.PI+2*Math.PI*(i%n)/n,y=-Math.PI+2*Math.PI*Math.floor(i/n)/n;return Math.sin(x)*Math.cos(y)+0.4*Math.cos(2*x)+0.3*Math.sin(3*y);});
+const conservative=new BVE(interacting,n,1e15,0),before=conservative.snapshot();
+while(0.2-conservative.time>1e-12)conservative.step(0.002,0.2-conservative.time);
+const after=conservative.snapshot();
+assert.ok(Math.abs(after.energy/before.energy-1)<1e-8,'Inviscid nonlinear energy conservation');
+assert.ok(Math.abs(after.enstrophy/before.enstrophy-1)<1e-8,'Inviscid enstrophy conservation');
+assert.ok(Math.max(...after.values.map((v,i)=>Math.abs(v-interacting[i])))>1e-3,'Nonlinear field evolves');
+const zero=new BVE(new Float64Array(size).fill(7),n,50,0);assert.equal(zero.removedMean,7);zero.step(0.01,0.01);assert.equal(zero.snapshot().energy,0);
+assert.equal(compile('-2^2')(0,0),-4);assert.equal(compile('2^-2')(0,0),0.25);assert.equal(compile('2^3^2')(0,0),512);
+assert.ok(Math.abs(compile('-2*cos(x)*cos(y)')(0,0)+2)<1e-12);
+assert.equal(compile('−2*cos(x)*cos(y)')(0,0),-2);
+assert.throws(()=>compile('window.alert(1)'));assert.throws(()=>compile('sin(x'));assert.throws(()=>compile('x y'));
+console.log('Passed: FFT, analytic decay, beta-wave phase, nonlinear invariants, mean removal and expression parsing.');
