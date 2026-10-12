@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="交互式大气动力学实验室：谱方法、涡旋演化、地转适应与热泡上升。">
+  <title>流动的秩序 · Atmospheric Dynamics Lab</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js" defer></script><script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="#"><span class="mark">◉</span> ATMOSPHERIC / LAB</a><a class="source" href="https://github.com/genlier/atmospheric-dynamics-lab" target="_blank" rel="noopener noreferrer">源代码 ↗</a></header>
+<main>
+  <section class="intro"><div><p class="eyebrow">A NUMERICAL FIELD NOTE / 01</p><h1>流动的<span>秩序。</span></h1><p class="lead">从一个涡旋，到一片湍流。<br>在谱空间里，观察大气运动的基本过程。</p></div><div class="intro-note"><span class="status-dot"></span> 离线数值结果 · 交互浏览<p>9 个算例 / Fourier spectral method<br>MATLAB + NumPy</p></div></section>
+  <section class="workspace" aria-label="交互实验台">
+    <aside class="case-rail"><div class="rail-title">EXPERIMENT INDEX <span>09</span></div><nav id="cases" aria-label="选择算例"></nav><p class="rail-note">切换算例，沿时间轴<br>查看流场的变化。</p></aside>
+    <div class="experiment">
+      <div class="experiment-header"><div><p class="eyebrow" id="group"></p><h2 id="case-title"></h2></div><span class="sample-tag" id="sample-count"></span></div>
+      <p class="description" id="description"></p>
+      <div class="metrics"><div><span>COMPUTATION GRID</span><strong id="grid"></strong></div><div><span>REYNOLDS NUMBER</span><strong id="re"></strong></div><div><span>BETA</span><strong id="beta"></strong></div><div><span>TIME STEP</span><strong id="dt"></strong></div></div>
+      <div class="view-controls"><label>物理量 <select id="field" aria-label="选择物理量"></select></label><label class="check"><input type="checkbox" id="fixed-scale"> 固定所有时次的色标</label></div>
+      <div class="plot-layout"><div class="field-wrap"><div class="field-caption"><span id="field-name"></span><span id="current-time"></span></div><div class="field-image"><canvas id="flow" width="640" height="640" aria-label="流场热力图"></canvas><span class="axis-x">x</span><span class="axis-y" id="axis-y">y</span><div class="coordinate-note">−π <span>0</span> π</div><output id="probe" aria-live="polite">移动鼠标查看格点数值</output></div><div class="colorbar"><span id="scale-min"></span><div class="color-gradient"></div><span id="scale-max"></span></div></div><div class="diagnostics"><div class="diagnostic-title"><span>DIAGNOSTICS</span><h3 id="chart-title"></h3></div><canvas id="chart" width="580" height="350" aria-label="诊断曲线"></canvas><div id="chart-legend" class="legend"></div><p id="chart-note"></p><div class="field-stat"><div>当前场最小值<strong id="minimum"></strong></div><div>当前场最大值<strong id="maximum"></strong></div></div></div></div>
+      <div class="timeline"><button id="play" type="button" aria-label="播放保存的时次">▶ 播放</button><div class="range-wrap"><label for="time">保存时次 <span id="frame-index"></span></label><input type="range" id="time" min="0" max="3" value="0" step="1"><div class="time-labels" id="time-labels"></div></div><button id="reset" class="reset" type="button">回到起点 ↺</button></div>
+      <p class="data-note" id="data-note"></p>
+    </div>
+  </section>
+  <section class="principles"><div class="section-label">THE PRINCIPLE</div><h2>在物理空间看流场，<br>在谱空间求演化。</h2><div class="principle-grid"><article><span>01 / EXPANSION</span><h3>傅里叶展开</h3><p>将周期区域内的物理量表示为不同波数的模态。低波数描述大尺度结构，高波数描述更细的变化。</p></article><article><span>02 / DERIVATIVE</span><h3>谱空间微分</h3><p>空间微分转化为谱系数与波数因子的乘积。流函数通过泊松反演联系涡度与速度。</p></article><article><span>03 / EVOLUTION</span><h3>平流与扩散</h3><p>非线性乘积在物理空间计算，并采用 2/3 截断退混淆。时间推进描述涡旋相互作用和黏性衰减。</p></article></div></section>
+</main>
+<footer><span>ATMOSPHERIC DYNAMICS LAB</span><p>数值快照展示 · 无账户、无访问统计、无外部字体请求</p><a href="https://github.com/genlier/atmospheric-dynamics-lab">探索代码 ↗</a></footer>
+</body></html>
